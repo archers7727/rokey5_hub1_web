@@ -1,0 +1,14 @@
+{
+  "name": "@robot-system/shared-types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types for Robot Material Processing System",
+  "main": "index.ts",
+  "types": "index.ts",
+  "keywords": [
+    "typescript",
+    "types",
+    "shared"
+  ],
+  "author": "",
+  "license": "MIT"
+}
