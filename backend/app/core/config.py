@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     ]
 
     # 로봇 설정
-    ROBOT_MODEL: str = "M1013"
+    ROBOT_MODEL: str = "M0609"
     ROBOT_IP: str = "192.168.1.100"
     ROBOT_PORT: int = 12345
 
