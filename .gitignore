@@ -47,3 +47,12 @@ htmlcov/
 # Build
 *.pyc
 *.pyo
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Google Cloud
+.gcloud/
