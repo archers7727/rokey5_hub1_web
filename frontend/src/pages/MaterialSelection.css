@@ -1,0 +1,111 @@
+.material-selection {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 200px);
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.page-header h1 {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.page-content {
+  flex: 1;
+}
+
+.section-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--gray-800);
+  margin-bottom: var(--space-8);
+  text-align: center;
+}
+
+.material-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.material-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  position: relative;
+}
+
+.material-emoji {
+  font-size: 80px;
+  line-height: 1;
+}
+
+.material-name {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--gray-900);
+  margin: 0;
+}
+
+.material-description {
+  font-size: var(--text-base);
+  color: var(--gray-600);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.page-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--gray-200);
+  margin-top: var(--space-8);
+}
+
+.selected-material-chip {
+  background-color: var(--primary-blue);
+  color: white;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+}
+
+.loading {
+  text-align: center;
+  padding: var(--space-12);
+  font-size: var(--text-lg);
+  color: var(--gray-600);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .material-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-footer {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .selected-material-chip {
+    width: 100%;
+    text-align: center;
+  }
+}

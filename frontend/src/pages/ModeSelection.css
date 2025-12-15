@@ -1,0 +1,80 @@
+.mode-selection {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 200px);
+}
+
+.selected-material-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background-color: var(--gray-100);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-full);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--gray-700);
+  margin-bottom: var(--space-6);
+}
+
+.mode-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.mode-card-content {
+  display: flex;
+  gap: var(--space-6);
+  align-items: center;
+}
+
+.mode-icon {
+  font-size: 64px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.mode-info {
+  flex: 1;
+}
+
+.mode-name {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--gray-900);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.mode-description {
+  font-size: var(--text-base);
+  color: var(--gray-600);
+  margin: 0 0 var(--space-3) 0;
+  line-height: 1.5;
+}
+
+.mode-meta {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.mode-time {
+  font-size: var(--text-sm);
+  color: var(--primary-blue);
+  font-weight: var(--font-medium);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .mode-card-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .mode-info {
+    width: 100%;
+  }
+}
