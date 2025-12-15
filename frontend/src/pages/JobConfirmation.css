@@ -1,0 +1,115 @@
+.job-confirmation {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 200px);
+}
+
+.confirmation-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+}
+
+.summary-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--gray-900);
+  margin: 0 0 var(--space-6) 0;
+  padding-bottom: var(--space-4);
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.summary-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) 0;
+}
+
+.summary-label {
+  font-size: var(--text-base);
+  color: var(--gray-600);
+  font-weight: var(--font-medium);
+}
+
+.summary-value {
+  font-size: var(--text-lg);
+  color: var(--gray-900);
+  font-weight: var(--font-semibold);
+}
+
+.summary-item.highlight {
+  background-color: #E3F2FD;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-4);
+}
+
+.summary-item.highlight .summary-label {
+  color: var(--primary-blue);
+}
+
+.summary-item.highlight .summary-value {
+  color: var(--primary-blue);
+  font-size: var(--text-2xl);
+}
+
+.summary-divider {
+  height: 1px;
+  background-color: var(--gray-200);
+  margin: var(--space-4) 0;
+}
+
+/* 3D 미리보기 플레이스홀더 */
+.preview-placeholder {
+  background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+  border-radius: var(--radius-lg);
+  border: 2px dashed var(--gray-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.placeholder-content {
+  text-align: center;
+  padding: var(--space-8);
+}
+
+.placeholder-icon {
+  font-size: 80px;
+  margin-bottom: var(--space-4);
+}
+
+.placeholder-content h3 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--gray-700);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.placeholder-content p {
+  font-size: var(--text-base);
+  color: var(--gray-600);
+  margin: 0;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .confirmation-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-placeholder {
+    min-height: 300px;
+  }
+}

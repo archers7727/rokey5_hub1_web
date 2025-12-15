@@ -1,0 +1,45 @@
+.radio-group {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.radio-option {
+  flex: 1;
+  min-width: 120px;
+  padding: var(--space-4);
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-out);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.radio-option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.radio-option:hover {
+  border-color: var(--primary-blue-light);
+  background-color: var(--gray-50);
+}
+
+.radio-option.selected {
+  border-color: var(--primary-blue);
+  background-color: #E3F2FD;
+}
+
+.radio-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.radio-sublabel {
+  font-size: var(--text-sm);
+  color: var(--gray-600);
+}

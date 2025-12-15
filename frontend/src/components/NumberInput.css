@@ -1,0 +1,55 @@
+.number-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.number-input-label {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--gray-700);
+}
+
+.number-input {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  background-color: white;
+}
+
+.number-input-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background-color: var(--primary-blue);
+  color: white;
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.number-input-btn:hover:not(:disabled) {
+  background-color: var(--primary-blue-dark);
+}
+
+.number-input-btn:disabled {
+  background-color: var(--gray-300);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.number-input-value {
+  min-width: 60px;
+  text-align: center;
+  font-size: var(--text-2xl);
+  font-weight: var(--font-semibold);
+  color: var(--gray-900);
+}
