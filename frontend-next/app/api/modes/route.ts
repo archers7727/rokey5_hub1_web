@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 
 // GET /api/modes?material=onion
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const material = searchParams.get('material')
 
-  const supabase = await createClient()
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
   let query = supabase
     .from('modes')
