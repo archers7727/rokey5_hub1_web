@@ -90,7 +90,7 @@ export default function Dashboard() {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h1>두산 로봇팔 재료 손질 시스템</h1>
+        <h1>Mr.Chef Assistant</h1>
       </div>
 
       <div className="dashboard-grid">
@@ -104,7 +104,7 @@ export default function Dashboard() {
             />
             <div className="status-info">
               <div className="status-text">{getStatusText()}</div>
-              <div className="status-model">Doosan M1013</div>
+              <div className="status-model">Doosan M0609</div>
             </div>
           </div>
         </Card>

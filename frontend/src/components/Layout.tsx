@@ -6,7 +6,7 @@ export const Layout = () => {
     <div className="layout">
       <header className="layout-header">
         <div className="container">
-          <h1 className="logo">두산 로봇팔 재료 손질 시스템</h1>
+          <h1 className="logo">Mr.Chef Assistant</h1>
         </div>
       </header>
 
