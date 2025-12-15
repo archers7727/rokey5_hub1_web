@@ -14,8 +14,8 @@ export function useTasksRealtime() {
       .from('tasks')
       .select('*')
       .order('created_at', { ascending: false })
-      .then(({ data }) => {
-        if (data) setTasks(data)
+      .then((response: any) => {
+        if (response.data) setTasks(response.data)
       })
 
     // Subscribe to realtime changes
