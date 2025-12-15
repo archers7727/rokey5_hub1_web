@@ -16,9 +16,12 @@ export function useWebSocket(url: string, options: UseWebSocketOptions = {}) {
   const wsRef = useRef<WebSocket | null>(null)
 
   useEffect(() => {
+    // HTTPS 페이지에서는 wss://, HTTP에서는 ws:// 사용
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+
     const wsUrl = url.startsWith('ws')
       ? url
-      : `ws://${window.location.hostname}:8000${url}`
+      : `${protocol}//${window.location.host}${url}`
 
     const ws = new WebSocket(wsUrl)
     wsRef.current = ws
