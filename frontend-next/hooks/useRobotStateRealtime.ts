@@ -14,8 +14,8 @@ export function useRobotStateRealtime() {
       .select('*')
       .eq('id', 'current')
       .single()
-      .then(({ data }) => {
-        if (data) setRobotState(data)
+      .then((response: any) => {
+        if (response.data) setRobotState(response.data)
       })
 
     // Subscribe to realtime changes

@@ -6,6 +6,8 @@ import { Card } from '@/components/Card'
 import { Button } from '@/components/Button'
 import { useRobotStateRealtime } from '@/hooks/useRobotStateRealtime'
 
+export const dynamic = 'force-dynamic'
+
 interface DashboardData {
   todayStats?: {
     jobCount: number
