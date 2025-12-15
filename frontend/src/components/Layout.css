@@ -1,0 +1,36 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout-header {
+  background-color: var(--primary-blue);
+  color: white;
+  padding: var(--space-4) 0;
+  box-shadow: var(--shadow-md);
+}
+
+.layout-header .logo {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+}
+
+.layout-main {
+  flex: 1;
+  padding: var(--space-8) 0;
+}
+
+.layout-footer {
+  background-color: var(--gray-100);
+  padding: var(--space-6) 0;
+  text-align: center;
+  color: var(--gray-600);
+  border-top: 1px solid var(--gray-300);
+}
+
+.layout-footer p {
+  margin: 0;
+  font-size: var(--text-sm);
+}
