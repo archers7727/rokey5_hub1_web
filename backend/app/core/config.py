@@ -1,7 +1,7 @@
 """
 애플리케이션 설정 관리
 """
-from pydantic_settings import BaseSettings
+from pydantic import BaseSettings
 from typing import List
 
 
