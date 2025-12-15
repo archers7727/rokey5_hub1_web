@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     MOCK_ROBOT: bool = True
 
+    # Firebase 설정
+    FIREBASE_CREDENTIALS_PATH: str = "config/serviceAccountKey.json"
+    FIREBASE_PROJECT_ID: str = "rokey-test-481307"
+
     class Config:
         env_file = ".env"
         case_sensitive = True

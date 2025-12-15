@@ -4,6 +4,8 @@
 from fastapi import APIRouter, Query
 from typing import Optional
 
+from app.core.firestore import get_modes_ref
+
 router = APIRouter()
 
 # Mock 데이터
@@ -48,10 +50,34 @@ MODES = [
 
 @router.get("")
 async def get_modes(material: Optional[str] = Query(None)):
-    """모든 손질 모드 조회 (재료별 필터 가능)"""
+    """모든 손질 모드 조회 (Firestore 우선, 없으면 Mock 데이터)"""
+    modes_ref = get_modes_ref()
 
+    # Firestore에서 조회
+    if modes_ref is not None:
+        modes = []
+        docs = modes_ref.stream()
+
+        for doc in docs:
+            mode_data = doc.to_dict()
+            mode_data["id"] = doc.id
+            modes.append(mode_data)
+
+        if modes:
+            # 재료별 필터링
+            if material:
+                modes = [
+                    mode for mode in modes
+                    if material in mode.get("compatible_materials", [])
+                ]
+
+            return {
+                "success": True,
+                "data": modes
+            }
+
+    # Firestore 사용 불가 또는 데이터 없음 → Mock 데이터
     if material:
-        # 특정 재료를 지원하는 모드만 필터링
         filtered_modes = [
             mode for mode in MODES
             if material in mode.get("supportedMaterials", [])
@@ -70,6 +96,21 @@ async def get_modes(material: Optional[str] = Query(None)):
 @router.get("/{mode_id}")
 async def get_mode(mode_id: str):
     """특정 모드 조회"""
+    modes_ref = get_modes_ref()
+
+    # Firestore에서 조회
+    if modes_ref is not None:
+        doc = modes_ref.document(mode_id).get()
+
+        if doc.exists:
+            mode_data = doc.to_dict()
+            mode_data["id"] = doc.id
+            return {
+                "success": True,
+                "data": mode_data
+            }
+
+    # Firestore에 없으면 Mock 데이터에서 검색
     mode = next((m for m in MODES if m["id"] == mode_id), None)
 
     if not mode:

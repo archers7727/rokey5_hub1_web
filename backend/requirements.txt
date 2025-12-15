@@ -14,9 +14,8 @@ passlib[bcrypt]==1.7.4
 pydantic==2.5.3
 pydantic-settings==2.1.0
 
-# 데이터베이스 (향후 사용)
-# sqlalchemy==2.0.25
-# alembic==1.13.1
+# 데이터베이스
+firebase-admin==6.4.0
 
 # 유틸리티
 python-dotenv==1.0.0
