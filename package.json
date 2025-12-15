@@ -1,0 +1,8 @@
+{
+  "name": "rokey5-hub1-web",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend-next"
+  ]
+}
