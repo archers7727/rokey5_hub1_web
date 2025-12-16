@@ -11,11 +11,23 @@ from sensor_msgs.msg import JointState
 from supabase import create_client, Client
 from datetime import datetime
 import json
+import math
 
 
 # Supabase 설정
 SUPABASE_URL = "https://lxllllhkovbegtbcfnaw.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4bGxsbGhrb3ZiZWd0YmNmbmF3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MDQ4MzksImV4cCI6MjA4MTM4MDgzOX0.MGL576AumztyxI7SEYUCxnPuo0euoWWFoEmTmJmfEEQ"
+
+
+def safe_float(value):
+    """NaN과 Infinity를 0.0으로 변환하는 안전한 float 변환"""
+    try:
+        f = float(value)
+        if math.isnan(f) or math.isinf(f):
+            return 0.0
+        return f
+    except (ValueError, TypeError):
+        return 0.0
 
 
 class RobotStatePublisher(Node):
@@ -66,17 +78,17 @@ class RobotStatePublisher(Node):
     def joint_state_callback(self, msg: JointState):
         """관절 상태 콜백"""
         try:
-            # 관절 상태 업데이트 - 명시적으로 float로 변환!
+            # 관절 상태 업데이트 - NaN/Inf를 0.0으로 변환!
             if len(msg.position) >= 6:
-                self.joint_states['position'] = [float(x) for x in msg.position[:6]]
+                self.joint_states['position'] = [safe_float(x) for x in msg.position[:6]]
                 self.data_changed = True
 
             if len(msg.velocity) >= 6:
-                self.joint_states['velocity'] = [float(x) for x in msg.velocity[:6]]
+                self.joint_states['velocity'] = [safe_float(x) for x in msg.velocity[:6]]
                 self.data_changed = True
 
             if len(msg.effort) >= 6:
-                self.joint_states['effort'] = [float(x) for x in msg.effort[:6]]
+                self.joint_states['effort'] = [safe_float(x) for x in msg.effort[:6]]
                 self.data_changed = True
 
             # 로봇이 움직이고 있는지 확인
