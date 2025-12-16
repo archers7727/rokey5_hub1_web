@@ -115,7 +115,7 @@ export default function ModeSelection() {
                     {mode.description}
                   </p>
                   <div className="text-sm text-gray-500 mt-2">
-                    예상 시간: 약 {Math.floor(mode.duration / 60)}분
+                    예상 시간: 약 {mode.duration}초
                   </div>
                 </div>
               </div>
