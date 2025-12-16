@@ -67,9 +67,16 @@ class RobotCommandHandler(Node):
         # 주기적으로 desired_state 확인 (fallback, 5초마다)
         self.check_timer = self.create_timer(5.0, self.check_desired_state)
 
+        # 주기적으로 홈 포지션 도달 여부 확인 (1초마다)
+        self.home_check_timer = self.create_timer(1.0, self.check_home_position_reached)
+
+        # 홈 포지션 정의 (하드코딩)
+        self.HOME_POSITION = [0.0, 0.0, 90.0, 0.0, 90.0, 0.0]
+
         self.get_logger().info('Robot Command Handler Node started')
         self.get_logger().info('Monitoring desired_state field...')
         self.get_logger().info('Publishing commands to: /robot_command')
+        self.get_logger().info(f'Home position: {self.HOME_POSITION}')
 
     def load_initial_state(self):
         """초기 로봇 상태 로드"""
@@ -162,7 +169,7 @@ class RobotCommandHandler(Node):
 
         try:
             # 유효한 명령인지 확인
-            valid_commands = ['pause', 'resume', 'stop', 'emergency_stop']
+            valid_commands = ['pause', 'resume', 'stop', 'emergency_stop', 'move_to_home']
             if command not in valid_commands:
                 self.get_logger().warn(f'Invalid command: {command}')
                 self.clear_command()
@@ -214,7 +221,12 @@ class RobotCommandHandler(Node):
                 },
                 'emergency_stop': {
                     'status': 'error',
-                    'doosan_robot_state': 6  # STATE_EMERGENCY_STOP
+                    'doosan_robot_state': 6,  # STATE_EMERGENCY_STOP
+                    'recovery_needed': True
+                },
+                'move_to_home': {
+                    'status': 'idle',
+                    'doosan_robot_state': 7  # STATE_HOMING
                 }
             }
 
@@ -247,6 +259,89 @@ class RobotCommandHandler(Node):
             self.current_command = None
         except Exception as e:
             self.get_logger().error(f'Failed to clear desired_state: {str(e)}')
+
+    def check_home_position_reached(self):
+        """홈 포지션 도달 여부 확인 (1초마다)"""
+        try:
+            # 현재 로봇 상태 조회
+            response = self.supabase.table('robot_state')\
+                .select('desired_state, joint_states, doosan_robot_state')\
+                .eq('id', 'current')\
+                .single()\
+                .execute()
+
+            if not response.data:
+                return
+
+            state = response.data
+            desired_state = state.get('desired_state')
+            doosan_state = state.get('doosan_robot_state')
+
+            # move_to_home 명령이 실행 중이고, HOMING 상태(7)인 경우에만 체크
+            if desired_state == 'move_to_home' and doosan_state == 7:
+                joint_states = state.get('joint_states', {})
+                current_position = joint_states.get('position', [])
+
+                if len(current_position) == 6:
+                    # 홈 포지션 도달 여부 확인 (5% 오차)
+                    if self.is_at_home_position(current_position, tolerance_percent=5.0):
+                        self.get_logger().info('✅ Home position reached! Recovery complete.')
+
+                        # 복구 완료 - desired_state를 None으로, recovery_needed를 False로
+                        self.supabase.table('robot_state')\
+                            .update({
+                                'desired_state': None,
+                                'recovery_needed': False,
+                                'status': 'idle',
+                                'doosan_robot_state': 1,  # STATE_STANDBY
+                                'updated_at': datetime.utcnow().isoformat()
+                            })\
+                            .eq('id', 'current')\
+                            .execute()
+
+                        self.current_command = None
+
+        except Exception as e:
+            self.get_logger().error(f'Failed to check home position: {str(e)}')
+
+    def is_at_home_position(self, current_joints, tolerance_percent=5.0):
+        """
+        현재 joint_states가 홈 포지션과 허용 오차 내에 있는지 확인
+
+        Args:
+            current_joints: [j1, j2, j3, j4, j5, j6] - 현재 각도 (degrees)
+            tolerance_percent: 허용 오차 (%)
+
+        Returns:
+            bool: 모든 조인트가 오차 범위 내이면 True
+        """
+        if len(current_joints) != 6:
+            return False
+
+        for i, (current, home) in enumerate(zip(current_joints, self.HOME_POSITION)):
+            # 절대값 오차 계산
+            error = abs(current - home)
+
+            # 허용 오차 계산
+            # 홈 각도가 0도에 가까운 경우 절대 오차 5도 사용
+            if abs(home) < 1.0:
+                tolerance = 5.0  # 절대 오차 5도
+            else:
+                tolerance = abs(home) * (tolerance_percent / 100.0)
+
+            if error > tolerance:
+                self.get_logger().debug(
+                    f'Joint {i+1}: current={current:.2f}°, home={home:.2f}°, '
+                    f'error={error:.2f}°, tolerance={tolerance:.2f}° - OUT OF RANGE'
+                )
+                return False
+
+            self.get_logger().debug(
+                f'Joint {i+1}: current={current:.2f}°, home={home:.2f}°, '
+                f'error={error:.2f}°, tolerance={tolerance:.2f}° - OK'
+            )
+
+        return True
 
 
 def main(args=None):

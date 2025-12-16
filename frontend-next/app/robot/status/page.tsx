@@ -85,6 +85,12 @@ export default function RobotStatus() {
     }
   }
 
+  const handleMoveToHome = () => {
+    if (confirm('🏠 로봇을 홈 포지션으로 이동시키겠습니까?')) {
+      sendCommand('move_to_home')
+    }
+  }
+
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
       idle: 'bg-gray-500',
@@ -412,17 +418,32 @@ export default function RobotStatus() {
               <span className="text-sm font-semibold">정지</span>
             </Button>
 
-            {/* Emergency Stop Button */}
-            <Button
-              variant="danger"
-              size="lg"
-              onClick={handleEmergencyStop}
-              disabled={sendingCommand}
-              className="flex flex-col items-center py-6"
-            >
-              <span className="text-3xl mb-2">🚨</span>
-              <span className="text-sm font-semibold">긴급정지</span>
-            </Button>
+            {/* Emergency Stop / Move to Home Button (conditional) */}
+            {!robotState?.recovery_needed ? (
+              // 일반 상태: 긴급정지 버튼
+              <Button
+                variant="danger"
+                size="lg"
+                onClick={handleEmergencyStop}
+                disabled={sendingCommand}
+                className="flex flex-col items-center py-6"
+              >
+                <span className="text-3xl mb-2">🚨</span>
+                <span className="text-sm font-semibold">긴급정지</span>
+              </Button>
+            ) : (
+              // 복구 필요 상태: 홈으로 이동 버튼
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={handleMoveToHome}
+                disabled={sendingCommand || robotState?.desired_state === 'move_to_home'}
+                className="flex flex-col items-center py-6 bg-blue-600 hover:bg-blue-700"
+              >
+                <span className="text-3xl mb-2">🏠</span>
+                <span className="text-sm font-semibold">홈으로 이동</span>
+              </Button>
+            )}
           </div>
 
           {/* Command Status */}
