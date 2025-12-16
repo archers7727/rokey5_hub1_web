@@ -1,18 +1,28 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-// GET /api/jobs
-export async function GET() {
+// GET /api/jobs - tasks 테이블 조회로 변경
+export async function GET(request: NextRequest) {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  const { data: jobs, error } = await supabase
-    .from('jobs')
-    .select('*')
-    .order('completed_at', { ascending: false })
-    .limit(50)
+  // task_id 파라미터 확인
+  const searchParams = request.nextUrl.searchParams
+  const taskId = searchParams.get('task_id')
+
+  let query = supabase.from('tasks').select('*')
+
+  // task_id가 있으면 특정 task 조회
+  if (taskId) {
+    query = query.eq('id', taskId)
+  } else {
+    // 없으면 최근 작업 조회
+    query = query.order('created_at', { ascending: false }).limit(50)
+  }
+
+  const { data: tasks, error } = await query
 
   if (error) {
     return NextResponse.json(
@@ -21,7 +31,7 @@ export async function GET() {
     )
   }
 
-  return NextResponse.json({ success: true, data: jobs })
+  return NextResponse.json({ success: true, data: tasks })
 }
 
 // POST /api/jobs

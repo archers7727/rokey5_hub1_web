@@ -37,19 +37,32 @@ export default function Dashboard() {
       const result = await response.json()
 
       if (result.success) {
-        // Transform jobs data for dashboard
-        const jobs = result.data || []
+        // Transform tasks data for dashboard
+        const tasks = result.data || []
+
+        // 완료된 작업만 필터링
+        const completedTasks = tasks.filter((task: any) => task.status === 'completed')
+
+        // 오늘 날짜 필터링
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const todayTasks = completedTasks.filter((task: any) => {
+          const taskDate = new Date(task.updated_at)
+          taskDate.setHours(0, 0, 0, 0)
+          return taskDate.getTime() === today.getTime()
+        })
+
         setDashboardData({
           todayStats: {
-            jobCount: jobs.length,
-            totalTime: jobs.reduce((acc: number, job: any) => acc + (job.actual_time || 0), 0)
+            jobCount: todayTasks.length,
+            totalTime: todayTasks.reduce((acc: number, task: any) => acc + (task.estimated_time || 0), 0)
           },
-          recentJobs: jobs.slice(0, 5).map((job: any) => ({
-            id: job.id,
-            material: job.material_id,
-            mode: job.mode_id,
-            completedAt: job.completed_at,
-            duration: job.actual_time || 0
+          recentJobs: completedTasks.slice(0, 5).map((task: any) => ({
+            id: task.id,
+            material: task.material_id,
+            mode: task.mode_id,
+            completedAt: task.updated_at,
+            duration: task.estimated_time || 0
           }))
         })
       }
