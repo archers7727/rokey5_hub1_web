@@ -147,10 +147,10 @@ export default function ParameterSelection() {
             <Card variant="outlined">
               <div className="text-center py-8">
                 <p className="text-gray-600">
-                  튀김 모드는 기본 설정으로 진행됩니다
+                  프레스 모드는 기본 설정으로 진행됩니다
                 </p>
                 <p className="text-sm text-gray-500 mt-2">
-                  바삭하게 튀겨드립니다 🍤
+                  -
                 </p>
               </div>
             </Card>
