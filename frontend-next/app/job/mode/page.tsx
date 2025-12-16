@@ -58,7 +58,7 @@ export default function ModeSelection() {
   const handleNext = () => {
     if (selectedMode) {
       localStorage.setItem('selectedMode', JSON.stringify(selectedMode))
-      router.push('/job/confirm')
+      router.push('/job/parameters')
     }
   }
 
