@@ -445,7 +445,11 @@ export default function RobotStatus() {
               variant="secondary"
               size="lg"
               onClick={handlePause}
-              disabled={sendingCommand || robotState?.status === 'paused'}
+              disabled={
+                sendingCommand ||
+                robotState?.status === 'paused' ||
+                robotState?.desired_state === 'pause'
+              }
               className="flex flex-col items-center py-6"
             >
               <span className="text-3xl mb-2">⏸️</span>
@@ -457,7 +461,10 @@ export default function RobotStatus() {
               variant="primary"
               size="lg"
               onClick={handleResume}
-              disabled={sendingCommand || robotState?.status !== 'paused'}
+              disabled={
+                sendingCommand ||
+                (robotState?.status !== 'paused' && robotState?.desired_state !== 'pause')
+              }
               className="flex flex-col items-center py-6"
             >
               <span className="text-3xl mb-2">▶️</span>
@@ -469,7 +476,11 @@ export default function RobotStatus() {
               variant="secondary"
               size="lg"
               onClick={handleStop}
-              disabled={sendingCommand || robotState?.status === 'idle'}
+              disabled={
+                sendingCommand ||
+                robotState?.status === 'idle' ||
+                robotState?.desired_state === 'stop'
+              }
               className="flex flex-col items-center py-6"
             >
               <span className="text-3xl mb-2">⏹️</span>
