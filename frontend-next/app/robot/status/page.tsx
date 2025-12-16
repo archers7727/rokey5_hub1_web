@@ -11,6 +11,7 @@ export const dynamic = 'force-dynamic'
 export default function RobotStatus() {
   const robotState = useRobotStateRealtime()
   const [currentTask, setCurrentTask] = useState<any>(null)
+  const [sendingCommand, setSendingCommand] = useState(false)
 
   useEffect(() => {
     if (robotState?.current_task_id) {
@@ -29,6 +30,58 @@ export default function RobotStatus() {
       }
     } catch (error) {
       console.error('Failed to load task:', error)
+    }
+  }
+
+  const sendCommand = async (command: string) => {
+    if (sendingCommand) return
+
+    setSendingCommand(true)
+    try {
+      const response = await fetch('/api/robot/command', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ command }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        alert(`명령 전송 성공: ${command}`)
+      } else {
+        alert(`명령 전송 실패: ${result.error}`)
+      }
+    } catch (error) {
+      console.error('Failed to send command:', error)
+      alert('명령 전송 중 오류가 발생했습니다.')
+    } finally {
+      setSendingCommand(false)
+    }
+  }
+
+  const handlePause = () => {
+    if (confirm('로봇을 일시정지하시겠습니까?')) {
+      sendCommand('pause')
+    }
+  }
+
+  const handleResume = () => {
+    if (confirm('로봇을 재개하시겠습니까?')) {
+      sendCommand('resume')
+    }
+  }
+
+  const handleStop = () => {
+    if (confirm('로봇을 정지하시겠습니까?')) {
+      sendCommand('stop')
+    }
+  }
+
+  const handleEmergencyStop = () => {
+    if (confirm('⚠️ 긴급정지를 실행하시겠습니까? 이 작업은 즉시 로봇을 정지시킵니다.')) {
+      sendCommand('emergency_stop')
     }
   }
 
@@ -377,6 +430,81 @@ export default function RobotStatus() {
           </div>
         </Card>
       </div>
+
+      {/* Robot Control */}
+      <Card variant="elevated">
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-xl font-bold text-gray-900 mb-1">로봇 제어</h3>
+            <p className="text-sm text-gray-600">로봇 동작을 직접 제어합니다</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Pause Button */}
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={handlePause}
+              disabled={sendingCommand || robotState?.status === 'paused'}
+              className="flex flex-col items-center py-6"
+            >
+              <span className="text-3xl mb-2">⏸️</span>
+              <span className="text-sm font-semibold">일시정지</span>
+            </Button>
+
+            {/* Resume Button */}
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={handleResume}
+              disabled={sendingCommand || robotState?.status !== 'paused'}
+              className="flex flex-col items-center py-6"
+            >
+              <span className="text-3xl mb-2">▶️</span>
+              <span className="text-sm font-semibold">재개</span>
+            </Button>
+
+            {/* Stop Button */}
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={handleStop}
+              disabled={sendingCommand || robotState?.status === 'idle'}
+              className="flex flex-col items-center py-6"
+            >
+              <span className="text-3xl mb-2">⏹️</span>
+              <span className="text-sm font-semibold">정지</span>
+            </Button>
+
+            {/* Emergency Stop Button */}
+            <Button
+              variant="danger"
+              size="lg"
+              onClick={handleEmergencyStop}
+              disabled={sendingCommand}
+              className="flex flex-col items-center py-6"
+            >
+              <span className="text-3xl mb-2">🚨</span>
+              <span className="text-sm font-semibold">긴급정지</span>
+            </Button>
+          </div>
+
+          {/* Command Status */}
+          {robotState?.desired_state && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="flex items-center space-x-2">
+                <span className="text-blue-600 font-semibold">전송된 명령:</span>
+                <span className="text-blue-900">{robotState.desired_state}</span>
+                {robotState.command_timestamp && (
+                  <span className="text-blue-600 text-sm">
+                    ({new Date(robotState.command_timestamp).toLocaleTimeString('ko-KR')})
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
 
       {/* Quick Actions */}
       <Card variant="outlined" className="bg-gray-50">
