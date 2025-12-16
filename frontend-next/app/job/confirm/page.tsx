@@ -122,7 +122,7 @@ export default function JobConfirmation() {
                     {mode.description}
                   </div>
                   <div className="text-sm text-gray-500 mt-1">
-                    예상 시간: 약 {Math.floor((mode.duration || 0) / 60)}분
+                    예상 시간: 약 {mode.duration || 0}초
                   </div>
                 </div>
               </div>
