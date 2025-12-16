@@ -7,7 +7,6 @@ Supabase 데이터베이스의 robot_state 테이블을 실시간으로 업데�
 
 구독 토픽:
   - /joint_states (sensor_msgs/JointState): 로봇 관절 상태
-  - /tcp_pose (geometry_msgs/Pose): TCP(Tool Center Point) 위치
 
 업데이트 주기: 1Hz (1초마다)
 """
@@ -15,7 +14,6 @@ Supabase 데이터베이스의 robot_state 테이블을 실시간으로 업데�
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
-from geometry_msgs.msg import Pose
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
@@ -47,15 +45,6 @@ class RobotStatePublisher(Node):
             'effort': [0.0] * 6
         }
 
-        self.tcp_position = {
-            'x': 500.0,
-            'y': 0.0,
-            'z': 300.0,
-            'rx': 0.0,
-            'ry': 0.0,
-            'rz': 0.0
-        }
-
         self.current_status = 'idle'  # idle, running, paused, error
 
         # 구독자 생성
@@ -66,18 +55,11 @@ class RobotStatePublisher(Node):
             10
         )
 
-        self.tcp_pose_sub = self.create_subscription(
-            Pose,
-            '/tcp_pose',
-            self.tcp_pose_callback,
-            10
-        )
-
         # Supabase 업데이트 타이머 (1Hz)
         self.update_timer = self.create_timer(1.0, self.update_supabase)
 
         self.get_logger().info('Robot State Publisher Node started')
-        self.get_logger().info('Subscribing to: /joint_states, /tcp_pose')
+        self.get_logger().info('Subscribing to: /joint_states')
         self.get_logger().info('Updating Supabase at 1Hz')
 
     def joint_state_callback(self, msg: JointState):
@@ -102,20 +84,6 @@ class RobotStatePublisher(Node):
         except Exception as e:
             self.get_logger().error(f'Error in joint_state_callback: {str(e)}')
 
-    def tcp_pose_callback(self, msg: Pose):
-        """TCP 위치 콜백"""
-        try:
-            self.tcp_position = {
-                'x': msg.position.x,
-                'y': msg.position.y,
-                'z': msg.position.z,
-                'rx': msg.orientation.x,
-                'ry': msg.orientation.y,
-                'rz': msg.orientation.z
-            }
-        except Exception as e:
-            self.get_logger().error(f'Error in tcp_pose_callback: {str(e)}')
-
     def update_supabase(self):
         """Supabase robot_state 테이블 업데이트"""
         try:
@@ -123,7 +91,6 @@ class RobotStatePublisher(Node):
             update_data = {
                 'status': self.current_status,
                 'joint_states': self.joint_states,
-                'tcp_position': self.tcp_position,
                 'updated_at': datetime.utcnow().isoformat()
             }
 

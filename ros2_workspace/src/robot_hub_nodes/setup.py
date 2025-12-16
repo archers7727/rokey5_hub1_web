@@ -29,6 +29,7 @@ setup(
         'console_scripts': [
             'robot_state_publisher = robot_hub_nodes.robot_state_publisher_node:main',
             'task_monitor = robot_hub_nodes.task_monitor_node:main',
+            'robot_command_handler = robot_hub_nodes.robot_command_handler_node:main',
             'test_task_subscriber = robot_hub_nodes.test_task_subscriber:main',
         ],
     },
