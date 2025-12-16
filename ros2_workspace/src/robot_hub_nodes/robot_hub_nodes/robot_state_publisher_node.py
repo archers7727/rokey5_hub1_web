@@ -10,6 +10,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from supabase import create_client, Client
 from datetime import datetime
+import json
 
 
 # Supabase 설정
@@ -103,6 +104,19 @@ class RobotStatePublisher(Node):
                 'joint_states': self.joint_states,
                 'updated_at': datetime.utcnow().isoformat()
             }
+
+            # 🔍 디버깅: JSON 직렬화 테스트
+            try:
+                json_test = json.dumps(upsert_data)
+                self.get_logger().info(f'📦 JSON serialization OK - Data size: {len(json_test)} bytes')
+            except Exception as json_error:
+                self.get_logger().error(f'❌ JSON serialization failed: {str(json_error)}')
+                self.data_changed = False
+                return
+
+            # 🔍 디버깅: 전송할 데이터 로그 (처음 3번만)
+            if self._update_count < 3:
+                self.get_logger().info(f'📤 Sending data: {json.dumps(upsert_data, indent=2)}')
 
             # UPSERT 실행 (존재하면 UPDATE, 없으면 INSERT)
             result = self.supabase.table('robot_state')\
