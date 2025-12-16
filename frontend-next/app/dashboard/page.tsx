@@ -104,14 +104,26 @@ export default function Dashboard() {
   }
 
   const formatTimeAgo = (dateString: string) => {
+    if (!dateString) return '방금 전'
+
     const date = new Date(dateString)
+
+    // 유효하지 않은 날짜 체크
+    if (isNaN(date.getTime())) return '방금 전'
+
     const now = new Date()
     const diff = Math.floor((now.getTime() - date.getTime()) / 1000)
+
+    // 음수면 (미래 날짜) 방금 전으로 표시
+    if (diff < 0) return '방금 전'
 
     if (diff < 60) return `${diff}초 전`
     if (diff < 3600) return `${Math.floor(diff / 60)}분 전`
     if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`
-    return `${Math.floor(diff / 86400)}일 전`
+
+    // 24시간 이상일 때만 일수로 표시
+    const days = Math.floor(diff / 86400)
+    return `${days}일 전`
   }
 
   if (loading) {
