@@ -138,15 +138,6 @@ export default function RobotStatus() {
     effort: [0, 0, 0, 0, 0, 0],
   }
 
-  const tcpPosition = robotState.tcp_position || {
-    x: 0,
-    y: 0,
-    z: 0,
-    rx: 0,
-    ry: 0,
-    rz: 0,
-  }
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -290,72 +281,6 @@ export default function RobotStatus() {
                 })}
               </tbody>
             </table>
-          </div>
-        </div>
-      </Card>
-
-      {/* TCP Position */}
-      <Card variant="elevated">
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-gray-900">
-            TCP 위치 (Tool Center Point)
-          </h2>
-          <p className="text-sm text-gray-600">로봇 엔드 이펙터의 위치 및 자세</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Position */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">
-                위치 (Position)
-              </h3>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">X</span>
-                  <span className="text-lg font-mono font-semibold text-gray-900">
-                    {formatPosition(tcpPosition.x)} mm
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Y</span>
-                  <span className="text-lg font-mono font-semibold text-gray-900">
-                    {formatPosition(tcpPosition.y)} mm
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Z</span>
-                  <span className="text-lg font-mono font-semibold text-gray-900">
-                    {formatPosition(tcpPosition.z)} mm
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Orientation */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">
-                자세 (Orientation)
-              </h3>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">RX (Roll)</span>
-                  <span className="text-lg font-mono font-semibold text-gray-900">
-                    {formatPosition(tcpPosition.rx)}°
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">RY (Pitch)</span>
-                  <span className="text-lg font-mono font-semibold text-gray-900">
-                    {formatPosition(tcpPosition.ry)}°
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">RZ (Yaw)</span>
-                  <span className="text-lg font-mono font-semibold text-gray-900">
-                    {formatPosition(tcpPosition.rz)}°
-                  </span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </Card>
