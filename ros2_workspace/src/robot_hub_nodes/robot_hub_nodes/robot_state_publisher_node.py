@@ -110,7 +110,6 @@ class RobotStatePublisher(Node):
         try:
             # UPDATE할 데이터 준비
             update_data = {
-                'robot_name': self.robot_name,
                 'status': self.current_status,
                 'joint_states': self.joint_states,
                 'updated_at': datetime.utcnow().isoformat()
