@@ -13,6 +13,9 @@ export default function RobotStatus() {
   const [currentTask, setCurrentTask] = useState<any>(null)
   const [sendingCommand, setSendingCommand] = useState(false)
 
+  // 홈 포지션 정의
+  const HOME_POSITION = [0, 0, 90, 0, 90, 0]
+
   useEffect(() => {
     if (robotState?.current_task_id) {
       loadCurrentTask(robotState.current_task_id)
@@ -20,6 +23,21 @@ export default function RobotStatus() {
       setCurrentTask(null)
     }
   }, [robotState?.current_task_id])
+
+  // 홈 포지션 도달 여부 자동 체크
+  useEffect(() => {
+    // move_to_home 명령이 실행 중일 때만 체크
+    if (robotState?.desired_state === 'move_to_home' && robotState?.recovery_needed) {
+      const jointStates = robotState.joint_states
+      if (jointStates && jointStates.position && jointStates.position.length === 6) {
+        // 홈 포지션 도달 여부 확인 (5% 오차)
+        if (isAtHomePosition(jointStates.position, HOME_POSITION, 5.0)) {
+          console.log('✅ Home position reached! Completing recovery...')
+          completeRecovery()
+        }
+      }
+    }
+  }, [robotState?.joint_states, robotState?.desired_state, robotState?.recovery_needed])
 
   const loadCurrentTask = async (taskId: string) => {
     try {
@@ -88,6 +106,57 @@ export default function RobotStatus() {
   const handleMoveToHome = () => {
     if (confirm('🏠 로봇을 홈 포지션으로 이동시키겠습니까?')) {
       sendCommand('move_to_home')
+    }
+  }
+
+  const isAtHomePosition = (
+    currentJoints: number[],
+    homeJoints: number[],
+    tolerancePercent: number
+  ): boolean => {
+    if (currentJoints.length !== 6 || homeJoints.length !== 6) {
+      return false
+    }
+
+    for (let i = 0; i < 6; i++) {
+      const current = currentJoints[i]
+      const home = homeJoints[i]
+      const error = Math.abs(current - home)
+
+      // 홈 각도가 0도에 가까운 경우 절대 오차 5도 사용
+      const tolerance = Math.abs(home) < 1.0 ? 5.0 : Math.abs(home) * (tolerancePercent / 100.0)
+
+      if (error > tolerance) {
+        console.log(
+          `Joint ${i + 1}: current=${current.toFixed(2)}°, home=${home.toFixed(2)}°, ` +
+          `error=${error.toFixed(2)}°, tolerance=${tolerance.toFixed(2)}° - OUT OF RANGE`
+        )
+        return false
+      }
+    }
+
+    console.log('✅ All joints within 5% tolerance of home position')
+    return true
+  }
+
+  const completeRecovery = async () => {
+    try {
+      const response = await fetch('/api/robot/recovery/complete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        console.log('✅ Recovery completed successfully')
+      } else {
+        console.error('Failed to complete recovery:', result.error)
+      }
+    } catch (error) {
+      console.error('Failed to complete recovery:', error)
     }
   }
 
