@@ -20,13 +20,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Prepare update data based on command
+    const updateData: any = {
+      desired_state: command,
+      command_timestamp: new Date().toISOString()
+    }
+
+    // Emergency stop: set recovery_needed to true
+    if (command === 'emergency_stop') {
+      updateData.recovery_needed = true
+    }
+
     // Update robot_state with the desired command
     const { data, error } = await supabase
       .from('robot_state')
-      .update({
-        desired_state: command,
-        command_timestamp: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', 'current')
       .select()
 
