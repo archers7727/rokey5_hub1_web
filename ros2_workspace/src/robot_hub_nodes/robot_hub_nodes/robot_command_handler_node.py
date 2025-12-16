@@ -23,12 +23,49 @@ from std_msgs.msg import String
 from supabase import create_client, Client
 import threading
 from datetime import datetime
+import os
+from pathlib import Path
 
 # ========================================
-# Supabase 설정 (하드코딩)
+# Supabase 설정 (환경변수에서 읽기)
 # ========================================
-SUPABASE_URL = "https://your-project.supabase.co"  # 여기에 실제 URL 입력
-SUPABASE_ANON_KEY = "your-anon-key-here"  # 여기에 실제 키 입력
+# .env 파일 로드 시도 (python-dotenv가 설치되어 있다면)
+try:
+    from dotenv import load_dotenv
+    # frontend-next/.env.local 파일 찾기
+    env_path = Path(__file__).resolve().parents[4] / 'frontend-next' / '.env.local'
+    if env_path.exists():
+        load_dotenv(env_path)
+        print(f"✅ Loaded .env.local from: {env_path}")
+    else:
+        print(f"⚠️  .env.local not found at: {env_path}")
+except ImportError:
+    print("⚠️  python-dotenv not installed, using system environment variables only")
+
+SUPABASE_URL = os.getenv('NEXT_PUBLIC_SUPABASE_URL', '')
+SUPABASE_ANON_KEY = os.getenv('NEXT_PUBLIC_SUPABASE_ANON_KEY', '')
+
+if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+    raise ValueError(
+        "❌ Supabase credentials not found!\n"
+        "\n"
+        "Please set environment variables:\n"
+        "  NEXT_PUBLIC_SUPABASE_URL\n"
+        "  NEXT_PUBLIC_SUPABASE_ANON_KEY\n"
+        "\n"
+        "Option 1: Create frontend-next/.env.local file:\n"
+        "  NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co\n"
+        "  NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here\n"
+        "\n"
+        "Option 2: Export environment variables:\n"
+        "  export NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co\n"
+        "  export NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here\n"
+        "\n"
+        "Find your credentials: Supabase Dashboard → Settings → API"
+    )
+
+print(f"✅ Supabase URL: {SUPABASE_URL}")
+print(f"✅ Supabase Key: {SUPABASE_ANON_KEY[:20]}...{SUPABASE_ANON_KEY[-4:]}")
 
 
 class RobotCommandHandler(Node):
