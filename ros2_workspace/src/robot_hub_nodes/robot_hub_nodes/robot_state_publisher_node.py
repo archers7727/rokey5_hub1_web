@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Robot State Publisher Node - UPSERT 버전
+Robot State Publisher Node
 
-UPDATE 대신 UPSERT를 사용하여 RLS 문제 해결
+로봇의 관절 상태를 ROS2에서 구독하여 Supabase에 업데이트
 """
 
 import rclpy
@@ -10,6 +10,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from supabase import create_client, Client
 from datetime import datetime
+import json
 
 
 # Supabase 설정
@@ -60,7 +61,7 @@ class RobotStatePublisher(Node):
 
         self.get_logger().info('Robot State Publisher Node started')
         self.get_logger().info(f'Subscribing to: {joint_states_topic}')
-        self.get_logger().info('Using UPSERT for Supabase updates')
+        self.get_logger().info('Using UPDATE for Supabase updates')
 
     def joint_state_callback(self, msg: JointState):
         """관절 상태 콜백"""
@@ -89,24 +90,37 @@ class RobotStatePublisher(Node):
             self.get_logger().error(f'Error in joint_state_callback: {str(e)}')
 
     def update_supabase(self):
-        """Supabase robot_state 테이블 업데이트 (UPSERT 사용)"""
+        """Supabase robot_state 테이블 업데이트 (UPDATE 사용)"""
         # 데이터 변경이 없으면 스킵
         if not self.data_changed:
             return
 
         try:
-            # UPSERT할 데이터 준비 (id 포함 필수!)
-            upsert_data = {
-                'id': 'current',  # Primary key - UPSERT를 위해 반드시 필요
+            # UPDATE할 데이터 준비
+            update_data = {
                 'robot_name': self.robot_name,
                 'status': self.current_status,
                 'joint_states': self.joint_states,
                 'updated_at': datetime.utcnow().isoformat()
             }
 
-            # UPSERT 실행 (존재하면 UPDATE, 없으면 INSERT)
+            # 🔍 디버깅: JSON 직렬화 테스트
+            try:
+                json_test = json.dumps(update_data)
+                self.get_logger().info(f'📦 JSON serialization OK - Data size: {len(json_test)} bytes')
+            except Exception as json_error:
+                self.get_logger().error(f'❌ JSON serialization failed: {str(json_error)}')
+                self.data_changed = False
+                return
+
+            # 🔍 디버깅: 전송할 데이터 로그 (처음 3번만)
+            if self._update_count < 3:
+                self.get_logger().info(f'📤 Sending data: {json.dumps(update_data, indent=2)}')
+
+            # UPDATE 실행
             result = self.supabase.table('robot_state')\
-                .upsert(upsert_data)\
+                .update(update_data)\
+                .eq('id', 'current')\
                 .execute()
 
             # 데이터 변경 플래그 리셋
