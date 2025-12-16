@@ -11,11 +11,13 @@ export default function JobConfirmation() {
   const router = useRouter()
   const [material, setMaterial] = useState<any>(null)
   const [mode, setMode] = useState<any>(null)
+  const [parameters, setParameters] = useState<any>({})
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
     const storedMaterial = localStorage.getItem('selectedMaterial')
     const storedMode = localStorage.getItem('selectedMode')
+    const storedParameters = localStorage.getItem('jobParameters')
 
     if (!storedMaterial || !storedMode) {
       router.push('/job/material')
@@ -24,6 +26,7 @@ export default function JobConfirmation() {
 
     setMaterial(JSON.parse(storedMaterial))
     setMode(JSON.parse(storedMode))
+    setParameters(storedParameters ? JSON.parse(storedParameters) : {})
   }, [router])
 
   const handleConfirm = async () => {
@@ -39,7 +42,7 @@ export default function JobConfirmation() {
         body: JSON.stringify({
           material: material.id,
           mode: mode.id,
-          parameters: {},
+          parameters: parameters,
           estimatedTime: mode.duration || 0,
         }),
       })
@@ -50,9 +53,10 @@ export default function JobConfirmation() {
         // Clear localStorage
         localStorage.removeItem('selectedMaterial')
         localStorage.removeItem('selectedMode')
+        localStorage.removeItem('jobParameters')
 
-        // Redirect to dashboard
-        router.push('/dashboard')
+        // Redirect to task monitor
+        router.push('/tasks/monitor')
       } else {
         alert('작업 생성에 실패했습니다: ' + result.error)
       }
@@ -72,11 +76,11 @@ export default function JobConfirmation() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <Link href="/job/mode">
+        <Link href="/job/parameters">
           <Button variant="ghost">← 뒤로</Button>
         </Link>
         <h1 className="text-2xl font-bold text-gray-900">작업 확인</h1>
-        <ProgressIndicator current={3} total={4} />
+        <ProgressIndicator current={4} total={4} />
       </div>
 
       {/* Content */}
@@ -127,6 +131,28 @@ export default function JobConfirmation() {
                 </div>
               </div>
             </div>
+
+            {/* Parameters */}
+            {Object.keys(parameters).length > 0 && (
+              <>
+                <div className="border-t border-gray-200" />
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-2">
+                    작업 설정
+                  </h3>
+                  <div className="space-y-2">
+                    {parameters.thickness && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600">두께</span>
+                        <span className="text-base font-semibold text-gray-900">
+                          {parameters.thickness}mm
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </Card>
 
