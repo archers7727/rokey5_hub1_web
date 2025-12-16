@@ -117,16 +117,18 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* 로봇 상태 카드 */}
-        <Card variant="elevated">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">로봇 상태</h3>
-          <div className="flex items-center space-x-4">
-            <div className={`w-4 h-4 rounded-full ${getStatusColor()}`} />
-            <div>
-              <div className="text-xl font-semibold text-gray-900">{getStatusText()}</div>
-              <div className="text-sm text-gray-500">Doosan M0609</div>
+        <Link href="/robot/status" className="block">
+          <Card variant="elevated" className="cursor-pointer hover:shadow-lg transition-shadow">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">로봇 상태</h3>
+            <div className="flex items-center space-x-4">
+              <div className={`w-4 h-4 rounded-full ${getStatusColor()}`} />
+              <div>
+                <div className="text-xl font-semibold text-gray-900">{getStatusText()}</div>
+                <div className="text-sm text-gray-500">Doosan M0609</div>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </Link>
 
         {/* 오늘의 통계 카드 */}
         <Card variant="elevated">
