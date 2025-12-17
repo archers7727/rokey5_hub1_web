@@ -12,10 +12,10 @@ export async function POST(request: NextRequest) {
     const { command } = body
 
     // Validate command
-    const validCommands = ['pause', 'resume', 'stop', 'emergency_stop', 'move_to_home']
+    const validCommands = ['pause', 'resume', 'stop', 'emergency_stop', 'home']
     if (!command || !validCommands.includes(command)) {
       return NextResponse.json(
-        { success: false, error: 'Invalid command. Must be one of: pause, resume, stop, emergency_stop, move_to_home' },
+        { success: false, error: 'Invalid command. Must be one of: pause, resume, stop, emergency_stop, home' },
         { status: 400 }
       )
     }

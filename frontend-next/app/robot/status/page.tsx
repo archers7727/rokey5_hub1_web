@@ -26,8 +26,8 @@ export default function RobotStatus() {
 
   // 홈 포지션 도달 여부 자동 체크
   useEffect(() => {
-    // move_to_home 명령이 실행 중일 때만 체크
-    if (robotState?.desired_state === 'move_to_home' && robotState?.recovery_needed) {
+    // home 명령이 실행 중일 때만 체크
+    if (robotState?.desired_state === 'home' && robotState?.recovery_needed) {
       const jointStates = robotState.joint_states
       if (jointStates && jointStates.position && jointStates.position.length === 6) {
         // 홈 포지션 도달 여부 확인 (5% 오차)
@@ -105,7 +105,7 @@ export default function RobotStatus() {
 
   const handleMoveToHome = () => {
     if (confirm('🏠 로봇을 홈 포지션으로 이동시키겠습니까?')) {
-      sendCommand('move_to_home')
+      sendCommand('home')
     }
   }
 
@@ -506,7 +506,7 @@ export default function RobotStatus() {
                 variant="primary"
                 size="lg"
                 onClick={handleMoveToHome}
-                disabled={sendingCommand || robotState?.desired_state === 'move_to_home'}
+                disabled={sendingCommand || robotState?.desired_state === 'home'}
                 className="flex flex-col items-center py-6 bg-blue-600 hover:bg-blue-700"
               >
                 <span className="text-3xl mb-2">🏠</span>
