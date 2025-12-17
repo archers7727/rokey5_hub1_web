@@ -360,76 +360,57 @@ export default function RobotStatus() {
         </div>
       </Card>
 
-      {/* Visual Indicators */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Joint Position Bars */}
-        <Card variant="elevated">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">관절 위치 시각화</h3>
-            <div className="space-y-3">
-              {[0, 1, 2, 3, 4, 5].map((index) => {
-                const position = jointStates.position[index] || 0
-                // 관절 범위를 -180 ~ 180으로 가정하고 0 ~ 100%로 정규화
-                const normalized = ((position + 180) / 360) * 100
+      {/* Joint States Summary - Text Only */}
+      <Card variant="elevated">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-900">관절 요약 (위치 & 속도)</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[0, 1, 2, 3, 4, 5].map((index) => {
+              const position = jointStates.position[index] || 0
+              const velocity = jointStates.velocity[index] || 0
+              const effort = jointStates.effort[index] || 0
+              const isMoving = Math.abs(velocity) > 0.01
 
-                return (
-                  <div key={index}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700">
-                        Joint {index + 1}
-                      </span>
-                      <span className="text-sm font-mono text-gray-900">
+              return (
+                <div key={index} className="bg-gray-50 rounded-lg p-4">
+                  <div className="font-semibold text-gray-900 mb-2">Joint {index + 1}</div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">위치:</span>
+                      <span className="font-mono font-medium text-gray-900">
                         {formatPosition(position)}°
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${Math.max(0, Math.min(100, normalized))}%` }}
-                      />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </Card>
-
-        {/* Velocity Indicators */}
-        <Card variant="elevated">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">관절 속도 모니터</h3>
-            <div className="space-y-3">
-              {[0, 1, 2, 3, 4, 5].map((index) => {
-                const velocity = Math.abs(jointStates.velocity[index] || 0)
-                const maxVelocity = 100 // 최대 속도 가정 (deg/s)
-                const percentage = (velocity / maxVelocity) * 100
-
-                return (
-                  <div key={index}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700">
-                        Joint {index + 1}
-                      </span>
-                      <span className="text-sm font-mono text-gray-900">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">속도:</span>
+                      <span className="font-mono font-medium text-gray-900">
                         {formatPosition(velocity)} deg/s
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full transition-all duration-300 ${
-                          velocity > 50 ? 'bg-red-500' : velocity > 20 ? 'bg-yellow-500' : 'bg-green-500'
-                        }`}
-                        style={{ width: `${Math.min(100, percentage)}%` }}
-                      />
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">토크:</span>
+                      <span className="font-mono font-medium text-gray-900">
+                        {formatPosition(effort)} Nm
+                      </span>
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-gray-200">
+                      {isMoving ? (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          ● 움직임
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          ● 정지
+                        </span>
+                      )}
                     </div>
                   </div>
-                )
-              })}
-            </div>
+                </div>
+              )
+            })}
           </div>
-        </Card>
-      </div>
+        </div>
+      </Card>
 
       {/* Robot Control */}
       <Card variant="elevated">
@@ -471,48 +452,33 @@ export default function RobotStatus() {
               <span className="text-sm font-semibold">재개</span>
             </Button>
 
-            {/* Stop Button */}
+            {/* Home Button - Always visible, enabled only when recovery_needed */}
             <Button
-              variant="secondary"
+              variant="primary"
               size="lg"
-              onClick={handleStop}
+              onClick={handleMoveToHome}
               disabled={
                 sendingCommand ||
-                robotState?.status === 'idle' ||
-                robotState?.desired_state === 'stop'
+                !robotState?.recovery_needed ||
+                robotState?.desired_state === 'home'
               }
-              className="flex flex-col items-center py-6"
+              className="flex flex-col items-center py-6 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400"
             >
-              <span className="text-3xl mb-2">⏹️</span>
-              <span className="text-sm font-semibold">정지</span>
+              <span className="text-3xl mb-2">🏠</span>
+              <span className="text-sm font-semibold">홈으로 이동</span>
             </Button>
 
-            {/* Emergency Stop / Move to Home Button (conditional) */}
-            {!robotState?.recovery_needed ? (
-              // 일반 상태: 긴급정지 버튼
-              <Button
-                variant="danger"
-                size="lg"
-                onClick={handleEmergencyStop}
-                disabled={sendingCommand}
-                className="flex flex-col items-center py-6"
-              >
-                <span className="text-3xl mb-2">🚨</span>
-                <span className="text-sm font-semibold">긴급정지</span>
-              </Button>
-            ) : (
-              // 복구 필요 상태: 홈으로 이동 버튼
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={handleMoveToHome}
-                disabled={sendingCommand || robotState?.desired_state === 'home'}
-                className="flex flex-col items-center py-6 bg-blue-600 hover:bg-blue-700"
-              >
-                <span className="text-3xl mb-2">🏠</span>
-                <span className="text-sm font-semibold">홈으로 이동</span>
-              </Button>
-            )}
+            {/* Emergency Stop Button - Always visible */}
+            <Button
+              variant="danger"
+              size="lg"
+              onClick={handleEmergencyStop}
+              disabled={sendingCommand}
+              className="flex flex-col items-center py-6"
+            >
+              <span className="text-3xl mb-2">🚨</span>
+              <span className="text-sm font-semibold">긴급정지</span>
+            </Button>
           </div>
 
           {/* Command Status */}

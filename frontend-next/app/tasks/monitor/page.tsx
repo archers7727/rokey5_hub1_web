@@ -205,24 +205,26 @@ export default function TaskMonitor() {
 
       {/* Robot Status */}
       {robotState && (
-        <Card variant="outlined" className="bg-gray-50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className={`w-4 h-4 rounded-full ${getStatusColor(robotState.status)}`} />
-              <div>
-                <div className="font-semibold text-gray-900">
-                  로봇 상태: {getStatusText(robotState.status)}
+        <Link href="/robot/status" className="block">
+          <Card variant="outlined" className="bg-gray-50 cursor-pointer hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className={`w-4 h-4 rounded-full ${getStatusColor(robotState.status)}`} />
+                <div>
+                  <div className="font-semibold text-gray-900">
+                    로봇 상태: {getStatusText(robotState.status)}
+                  </div>
+                  <div className="text-sm text-gray-600">Doosan M0609 (클릭하여 상세 보기)</div>
                 </div>
-                <div className="text-sm text-gray-600">Doosan M0609</div>
               </div>
+              {robotState.current_task_id && (
+                <div className="text-sm text-gray-600">
+                  작업 ID: {robotState.current_task_id.substring(0, 8)}...
+                </div>
+              )}
             </div>
-            {robotState.current_task_id && (
-              <div className="text-sm text-gray-600">
-                작업 ID: {robotState.current_task_id.substring(0, 8)}...
-              </div>
-            )}
-          </div>
-        </Card>
+          </Card>
+        </Link>
       )}
 
       {/* Active Tasks */}
