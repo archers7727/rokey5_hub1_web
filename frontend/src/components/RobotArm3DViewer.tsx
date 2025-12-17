@@ -17,7 +17,7 @@ function Scene({ jointAngles }: { jointAngles: number[] }) {
   return (
     <>
       {/* 카메라 */}
-      <PerspectiveCamera makeDefault position={[2, 1.5, 2]} fov={50} />
+      <PerspectiveCamera makeDefault position={[1.5, 1.2, 1.5]} fov={60} />
 
       {/* 조명 */}
       <ambientLight intensity={0.5} />
@@ -48,6 +48,7 @@ function Scene({ jointAngles }: { jointAngles: number[] }) {
         minDistance={1}
         maxDistance={5}
         maxPolarAngle={Math.PI / 2}
+        target={[0.2, 0.4, 0]}
       />
     </>
   )

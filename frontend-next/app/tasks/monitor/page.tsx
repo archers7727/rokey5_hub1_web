@@ -202,10 +202,41 @@ export default function TaskMonitor() {
     )
   }
 
-  // 현재 실행 중인 작업의 관절 각도 (임시 데이터, 실제로는 WebSocket에서 받아야 함)
+  // 현재 실행 중인 작업의 관절 각도
   const runningTask = activeTasks.find((t: Task) => t.status === 'running')
-  const jointAngles = robotState?.joint_angles || [0, 0, 90, 0, 90, 0]
   const currentProgress = runningTask?.progress || 0
+
+  // 로봇팔 애니메이션을 위한 상태
+  const [animatedJointAngles, setAnimatedJointAngles] = useState<number[]>([0, 0, 0, 0, 0, 0])
+
+  // 진행 중인 작업이 있으면 로봇팔 애니메이션
+  useEffect(() => {
+    if (!runningTask) {
+      // 작업이 없으면 홈 포지션
+      setAnimatedJointAngles([0, 0, 0, 0, 0, 0])
+      return
+    }
+
+    // 작업 진행 중이면 관절을 부드럽게 움직임
+    const interval = setInterval(() => {
+      const time = Date.now() / 1000
+      const progress = currentProgress / 100
+
+      // 작업 진행도에 따라 관절 각도 변경
+      setAnimatedJointAngles([
+        Math.sin(time * 0.5) * 30 * progress,           // Joint 1: 좌우 회전
+        -20 + Math.sin(time * 0.3) * 15 * progress,     // Joint 2: 위아래
+        90 + Math.cos(time * 0.4) * 20 * progress,      // Joint 3: 엘보우
+        Math.sin(time * 0.6) * 25 * progress,           // Joint 4: 손목 회전
+        45 + Math.cos(time * 0.5) * 15 * progress,      // Joint 5: 손목 벤드
+        Math.sin(time * 0.7) * 30 * progress,           // Joint 6: 플랜지 회전
+      ])
+    }, 50) // 50ms마다 업데이트
+
+    return () => clearInterval(interval)
+  }, [runningTask, currentProgress])
+
+  const jointAngles = robotState?.joint_angles || animatedJointAngles
 
   return (
     <div className="space-y-6">

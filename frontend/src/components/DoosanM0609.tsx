@@ -32,7 +32,7 @@ export function DoosanM0609({ jointAngles }: DoosanM0609Props) {
   }, [jointAngles])
 
   return (
-    <group ref={baseRef} position={[0, 0, 0]}>
+    <group ref={baseRef} position={[-0.3, 0, -0.2]} rotation={[0, Math.PI / 4, 0]}>
       {/* 베이스 */}
       <mesh position={[0, 0.05, 0]}>
         <cylinderGeometry args={[0.15, 0.18, 0.1, 32]} />
