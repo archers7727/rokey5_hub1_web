@@ -21,7 +21,9 @@ WHERE updated_at IS NULL;
 
 -- Step 3: Drop old columns
 ALTER TABLE tasks
-DROP COLUMN IF EXISTS started_at,
+DROP COLUMN IF EXISTS started_at;
+
+ALTER TABLE tasks
 DROP COLUMN IF EXISTS completed_at;
 
 -- Step 4: Create auto-update function
