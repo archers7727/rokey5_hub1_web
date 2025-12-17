@@ -140,7 +140,7 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold text-gray-900">Mr.Chef Assistant</h1>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* 로봇 상태 카드 */}
         <Link href="/robot/status" className="block">
           <Card variant="elevated" className="cursor-pointer hover:shadow-lg transition-shadow">
@@ -150,6 +150,20 @@ export default function Dashboard() {
               <div>
                 <div className="text-xl font-semibold text-gray-900">{getStatusText()}</div>
                 <div className="text-sm text-gray-500">Doosan M0609</div>
+              </div>
+            </div>
+          </Card>
+        </Link>
+
+        {/* 작업 모니터 카드 */}
+        <Link href="/tasks/monitor" className="block">
+          <Card variant="elevated" className="cursor-pointer hover:shadow-lg transition-shadow">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">작업 모니터</h3>
+            <div className="flex items-center space-x-4">
+              <div className="text-3xl">📊</div>
+              <div>
+                <div className="text-xl font-semibold text-gray-900">작업 현황</div>
+                <div className="text-sm text-gray-500">실시간 모니터링</div>
               </div>
             </div>
           </Card>
