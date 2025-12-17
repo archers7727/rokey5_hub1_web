@@ -113,14 +113,24 @@ export default function Dashboard() {
 
   const calculateDuration = (task: any): number => {
     // created_at(시작) ~ updated_at(종료) 사이의 시간 계산
-    if (!task.created_at || !task.updated_at) return 0
+    if (!task.created_at) return 0
 
     const start = new Date(task.created_at).getTime()
-    const end = new Date(task.updated_at).getTime()
-    const diffMs = end - start
+    // updated_at이 없으면 created_at 사용 (같은 시간 = 0초)
+    // 또는 estimated_time이 있으면 사용
+    const end = task.updated_at
+      ? new Date(task.updated_at).getTime()
+      : start // updated_at이 없으면 created_at 사용 (0초 반환)
 
-    // 밀리초를 초로 변환
-    return Math.floor(diffMs / 1000)
+    const diffMs = end - start
+    const calculatedSeconds = Math.floor(diffMs / 1000)
+
+    // 계산된 시간이 0이고 estimated_time이 있으면 estimated_time 사용
+    if (calculatedSeconds === 0 && task.estimated_time) {
+      return task.estimated_time
+    }
+
+    return calculatedSeconds
   }
 
   const formatTimeAgo = (dateString: string) => {
