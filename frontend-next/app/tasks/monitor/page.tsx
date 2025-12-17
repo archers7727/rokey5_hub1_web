@@ -19,7 +19,7 @@ interface Task {
   progress: number
   priority: number
   created_at: string
-  started_at?: string
+  updated_at?: string
   estimated_time?: number
 }
 
@@ -100,7 +100,22 @@ export default function TaskMonitor() {
     if (seconds < 60) return `${seconds}초`
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
-    return `${mins}분 ${secs}초`
+    return secs > 0 ? `${mins}분 ${secs}초` : `${mins}분`
+  }
+
+  const calculateDuration = (task: Task): number => {
+    // created_at(시작) ~ updated_at(종료) 사이의 시간 계산
+    if (!task.created_at) return 0
+
+    const start = new Date(task.created_at).getTime()
+    // 완료된 작업은 updated_at, 진행 중이면 현재 시간 사용
+    const end = task.updated_at
+      ? new Date(task.updated_at).getTime()
+      : Date.now()
+    const diffMs = end - start
+
+    // 밀리초를 초로 변환
+    return Math.floor(diffMs / 1000)
   }
 
   const renderTaskCard = (task: Task) => {
@@ -172,11 +187,9 @@ export default function TaskMonitor() {
             <div>
               우선순위: {task.priority}
             </div>
-            {task.estimated_time && (
-              <div>
-                예상 시간: {formatTime(task.estimated_time)}
-              </div>
-            )}
+            <div>
+              {task.status === 'completed' ? '소요 시간' : '경과 시간'}: {formatTime(calculateDuration(task))}
+            </div>
           </div>
 
           {/* Task ID */}

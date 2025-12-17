@@ -50,8 +50,8 @@ export default function Dashboard() {
         tomorrow.setDate(tomorrow.getDate() + 1)
 
         const todayTasks = completedTasks.filter((task: any) => {
-          // completed_at이 있으면 사용, 없으면 created_at 사용
-          const dateToCheck = task.completed_at || task.created_at
+          // updated_at을 완료 시간으로 사용
+          const dateToCheck = task.updated_at || task.created_at
           if (!dateToCheck) return false
 
           const taskDate = new Date(dateToCheck)
@@ -62,14 +62,14 @@ export default function Dashboard() {
         setDashboardData({
           todayStats: {
             jobCount: todayTasks.length,
-            totalTime: todayTasks.reduce((acc: number, task: any) => acc + (task.estimated_time || 0), 0)
+            totalTime: todayTasks.reduce((acc: number, task: any) => acc + calculateDuration(task), 0)
           },
           recentJobs: completedTasks.slice(0, 5).map((task: any) => ({
             id: task.id,
             material: task.material_id,
             mode: task.mode_id,
-            completedAt: task.completed_at || task.created_at,
-            duration: task.estimated_time || 0
+            completedAt: task.updated_at || task.created_at,
+            duration: calculateDuration(task)
           }))
         })
       }
@@ -105,9 +105,22 @@ export default function Dashboard() {
   }
 
   const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600)
-    const mins = Math.floor((seconds % 3600) / 60)
-    return hours > 0 ? `${hours}시간 ${mins}분` : `${mins}분`
+    if (seconds < 60) return `${seconds}초`
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return secs > 0 ? `${mins}분 ${secs}초` : `${mins}분`
+  }
+
+  const calculateDuration = (task: any): number => {
+    // created_at(시작) ~ updated_at(종료) 사이의 시간 계산
+    if (!task.created_at || !task.updated_at) return 0
+
+    const start = new Date(task.created_at).getTime()
+    const end = new Date(task.updated_at).getTime()
+    const diffMs = end - start
+
+    // 밀리초를 초로 변환
+    return Math.floor(diffMs / 1000)
   }
 
   const formatTimeAgo = (dateString: string) => {
