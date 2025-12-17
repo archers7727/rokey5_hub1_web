@@ -46,10 +46,15 @@ export default function Dashboard() {
         // 오늘 날짜 필터링
         const today = new Date()
         today.setHours(0, 0, 0, 0)
+        const tomorrow = new Date(today)
+        tomorrow.setDate(tomorrow.getDate() + 1)
+
         const todayTasks = completedTasks.filter((task: any) => {
-          const taskDate = new Date(task.updated_at)
-          taskDate.setHours(0, 0, 0, 0)
-          return taskDate.getTime() === today.getTime()
+          if (!task.completed_at) return false
+
+          const taskDate = new Date(task.completed_at)
+          // 오늘 00:00:00 ~ 내일 00:00:00 사이
+          return taskDate >= today && taskDate < tomorrow
         })
 
         setDashboardData({
@@ -61,7 +66,7 @@ export default function Dashboard() {
             id: task.id,
             material: task.material_id,
             mode: task.mode_id,
-            completedAt: task.updated_at,
+            completedAt: task.completed_at || task.created_at,
             duration: task.estimated_time || 0
           }))
         })
