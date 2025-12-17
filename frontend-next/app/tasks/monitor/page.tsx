@@ -220,7 +220,8 @@ export default function TaskMonitor() {
     // 작업 진행 중이면 관절을 부드럽게 움직임
     const interval = setInterval(() => {
       const time = Date.now() / 1000
-      const progress = currentProgress / 100
+      // 진행률이 0이어도 최소한의 움직임 보장 (0.3 ~ 1.0)
+      const progress = Math.max(0.3, currentProgress / 100)
 
       // 작업 진행도에 따라 관절 각도 변경
       setAnimatedJointAngles([

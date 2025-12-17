@@ -34,86 +34,214 @@ export function DoosanM0609({ jointAngles }: DoosanM0609Props) {
   }, [jointAngles])
 
   return (
-    <group ref={baseRef} position={[-0.3, 0, -0.2]} rotation={[0, Math.PI / 4, 0]}>
+    <group ref={baseRef} position={[-0.2, 0, 0.1]} rotation={[0, -Math.PI / 6, 0]}>
       {/* 베이스 */}
       <mesh position={[0, 0.05, 0]}>
         <cylinderGeometry args={[0.15, 0.18, 0.1, 32]} />
-        <meshStandardMaterial color="#2c3e50" metalness={0.8} roughness={0.2} />
+        <meshStandardMaterial
+          color="#e8e8e8"
+          metalness={0.3}
+          roughness={0.4}
+          emissive="#ffffff"
+          emissiveIntensity={0.1}
+        />
+      </mesh>
+      {/* 베이스 윤곽선 */}
+      <mesh position={[0, 0.05, 0]}>
+        <cylinderGeometry args={[0.151, 0.181, 0.101, 32]} />
+        <meshBasicMaterial color="#888888" wireframe />
       </mesh>
 
       {/* Joint 1 - 회전 베이스 */}
       <group ref={joint1Ref} position={[0, 0.1, 0]}>
         <mesh position={[0, 0.08, 0]}>
           <cylinderGeometry args={[0.12, 0.12, 0.16, 32]} />
-          <meshStandardMaterial color="#34495e" metalness={0.7} roughness={0.3} />
+          <meshStandardMaterial
+            color="#f5f5f5"
+            metalness={0.3}
+            roughness={0.4}
+            emissive="#ffffff"
+            emissiveIntensity={0.1}
+          />
+        </mesh>
+        {/* Joint 1 윤곽선 */}
+        <mesh position={[0, 0.08, 0]}>
+          <cylinderGeometry args={[0.121, 0.121, 0.161, 32]} />
+          <meshBasicMaterial color="#888888" wireframe />
         </mesh>
 
-        {/* Joint 2 - 첫 번째 링크 */}
+        {/* Joint 2 - 첫 번째 링크 (회색) */}
         <group ref={joint2Ref} position={[0, 0.16, 0]}>
           {/* 숄더 */}
           <mesh position={[0, 0, 0]}>
             <boxGeometry args={[0.12, 0.1, 0.12]} />
-            <meshStandardMaterial color="#e74c3c" metalness={0.6} roughness={0.4} />
+            <meshStandardMaterial
+              color="#f5f5f5"
+              metalness={0.3}
+              roughness={0.4}
+              emissive="#ffffff"
+              emissiveIntensity={0.1}
+            />
+          </mesh>
+          {/* 숄더 윤곽선 */}
+          <mesh position={[0, 0, 0]}>
+            <boxGeometry args={[0.121, 0.101, 0.121]} />
+            <meshBasicMaterial color="#888888" wireframe />
           </mesh>
 
-          {/* 상완 링크 */}
+          {/* 상완 링크 (회색) */}
           <mesh position={[0, 0.15, 0]}>
             <boxGeometry args={[0.08, 0.3, 0.08]} />
-            <meshStandardMaterial color="#3498db" metalness={0.7} roughness={0.3} />
+            <meshStandardMaterial
+              color="#b0b0b0"
+              metalness={0.4}
+              roughness={0.4}
+            />
+          </mesh>
+          {/* 상완 링크 윤곽선 */}
+          <mesh position={[0, 0.15, 0]}>
+            <boxGeometry args={[0.081, 0.301, 0.081]} />
+            <meshBasicMaterial color="#666666" wireframe />
           </mesh>
 
-          {/* Joint 3 - 두 번째 링크 (엘보우) */}
+          {/* Joint 3 - 두 번째 링크 (엘보우, 회색) */}
           <group ref={joint3Ref} position={[0, 0.3, 0]}>
             <mesh position={[0, 0, 0]}>
               <sphereGeometry args={[0.06, 32, 32]} />
-              <meshStandardMaterial color="#e67e22" metalness={0.6} roughness={0.4} />
+              <meshStandardMaterial
+                color="#f5f5f5"
+                metalness={0.3}
+                roughness={0.4}
+                emissive="#ffffff"
+                emissiveIntensity={0.1}
+              />
+            </mesh>
+            {/* 엘보우 윤곽선 */}
+            <mesh position={[0, 0, 0]}>
+              <sphereGeometry args={[0.061, 32, 32]} />
+              <meshBasicMaterial color="#888888" wireframe />
             </mesh>
 
-            {/* 전완 링크 */}
+            {/* 전완 링크 (회색) */}
             <mesh position={[0, 0.125, 0]}>
               <boxGeometry args={[0.06, 0.25, 0.06]} />
-              <meshStandardMaterial color="#3498db" metalness={0.7} roughness={0.3} />
+              <meshStandardMaterial
+                color="#b0b0b0"
+                metalness={0.4}
+                roughness={0.4}
+              />
+            </mesh>
+            {/* 전완 링크 윤곽선 */}
+            <mesh position={[0, 0.125, 0]}>
+              <boxGeometry args={[0.061, 0.251, 0.061]} />
+              <meshBasicMaterial color="#666666" wireframe />
             </mesh>
 
-            {/* Joint 4 - 손목 회전 */}
+            {/* Joint 4 - 손목 회전 (하얀색) */}
             <group ref={joint4Ref} position={[0, 0.25, 0]}>
               <mesh position={[0, 0, 0]}>
                 <cylinderGeometry args={[0.04, 0.04, 0.08, 32]} />
-                <meshStandardMaterial color="#9b59b6" metalness={0.6} roughness={0.4} />
+                <meshStandardMaterial
+                  color="#f5f5f5"
+                  metalness={0.3}
+                  roughness={0.4}
+                  emissive="#ffffff"
+                  emissiveIntensity={0.1}
+                />
+              </mesh>
+              {/* Joint 4 윤곽선 */}
+              <mesh position={[0, 0, 0]}>
+                <cylinderGeometry args={[0.041, 0.041, 0.081, 32]} />
+                <meshBasicMaterial color="#888888" wireframe />
               </mesh>
 
-              {/* Joint 5 - 손목 벤드 */}
+              {/* Joint 5 - 손목 벤드 (하얀색) */}
               <group ref={joint5Ref} position={[0, 0.04, 0]}>
                 <mesh position={[0, 0, 0]}>
                   <sphereGeometry args={[0.035, 32, 32]} />
-                  <meshStandardMaterial color="#1abc9c" metalness={0.6} roughness={0.4} />
+                  <meshStandardMaterial
+                    color="#f5f5f5"
+                    metalness={0.3}
+                    roughness={0.4}
+                    emissive="#ffffff"
+                    emissiveIntensity={0.1}
+                  />
+                </mesh>
+                {/* Joint 5 윤곽선 */}
+                <mesh position={[0, 0, 0]}>
+                  <sphereGeometry args={[0.036, 32, 32]} />
+                  <meshBasicMaterial color="#888888" wireframe />
                 </mesh>
 
-                {/* Joint 6 - 플랜지 */}
+                {/* Joint 6 - 플랜지 (하얀색) */}
                 <group ref={joint6Ref} position={[0, 0.04, 0]}>
                   <mesh position={[0, 0, 0]}>
                     <cylinderGeometry args={[0.05, 0.05, 0.02, 32]} />
-                    <meshStandardMaterial color="#34495e" metalness={0.8} roughness={0.2} />
+                    <meshStandardMaterial
+                      color="#e8e8e8"
+                      metalness={0.3}
+                      roughness={0.4}
+                      emissive="#ffffff"
+                      emissiveIntensity={0.1}
+                    />
+                  </mesh>
+                  {/* Joint 6 윤곽선 */}
+                  <mesh position={[0, 0, 0]}>
+                    <cylinderGeometry args={[0.051, 0.051, 0.021, 32]} />
+                    <meshBasicMaterial color="#888888" wireframe />
                   </mesh>
 
-                  {/* 엔드 이펙터 (그리퍼) */}
+                  {/* 엔드 이펙터 (그리퍼) - 하얀색 */}
                   <group position={[0, 0.01, 0]}>
                     {/* 그리퍼 베이스 */}
                     <mesh position={[0, 0.02, 0]}>
                       <cylinderGeometry args={[0.03, 0.04, 0.04, 32]} />
-                      <meshStandardMaterial color="#95a5a6" metalness={0.7} roughness={0.3} />
+                      <meshStandardMaterial
+                        color="#f5f5f5"
+                        metalness={0.3}
+                        roughness={0.4}
+                        emissive="#ffffff"
+                        emissiveIntensity={0.1}
+                      />
+                    </mesh>
+                    {/* 그리퍼 베이스 윤곽선 */}
+                    <mesh position={[0, 0.02, 0]}>
+                      <cylinderGeometry args={[0.031, 0.041, 0.041, 32]} />
+                      <meshBasicMaterial color="#888888" wireframe />
                     </mesh>
 
                     {/* 그리퍼 핑거 1 */}
                     <mesh position={[0.025, 0.05, 0]}>
                       <boxGeometry args={[0.015, 0.06, 0.02]} />
-                      <meshStandardMaterial color="#7f8c8d" metalness={0.6} roughness={0.4} />
+                      <meshStandardMaterial
+                        color="#f5f5f5"
+                        metalness={0.3}
+                        roughness={0.4}
+                        emissive="#ffffff"
+                        emissiveIntensity={0.1}
+                      />
+                    </mesh>
+                    {/* 그리퍼 핑거 1 윤곽선 */}
+                    <mesh position={[0.025, 0.05, 0]}>
+                      <boxGeometry args={[0.016, 0.061, 0.021]} />
+                      <meshBasicMaterial color="#888888" wireframe />
                     </mesh>
 
                     {/* 그리퍼 핑거 2 */}
                     <mesh position={[-0.025, 0.05, 0]}>
                       <boxGeometry args={[0.015, 0.06, 0.02]} />
-                      <meshStandardMaterial color="#7f8c8d" metalness={0.6} roughness={0.4} />
+                      <meshStandardMaterial
+                        color="#f5f5f5"
+                        metalness={0.3}
+                        roughness={0.4}
+                        emissive="#ffffff"
+                        emissiveIntensity={0.1}
+                      />
+                    </mesh>
+                    {/* 그리퍼 핑거 2 윤곽선 */}
+                    <mesh position={[-0.025, 0.05, 0]}>
+                      <boxGeometry args={[0.016, 0.061, 0.021]} />
+                      <meshBasicMaterial color="#888888" wireframe />
                     </mesh>
                   </group>
                 </group>
