@@ -292,78 +292,11 @@ export default function RobotStatus() {
         </Card>
       </div>
 
-      {/* Joint States */}
-      <Card variant="elevated">
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-gray-900">관절 상태 (Joint States)</h2>
-          <p className="text-sm text-gray-600">6축 로봇 관절의 위치, 속도, 토크 정보</p>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">
-                    관절
-                  </th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-700">
-                    위치 (deg)
-                  </th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-700">
-                    속도 (deg/s)
-                  </th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-700">
-                    토크 (Nm)
-                  </th>
-                  <th className="text-center py-3 px-4 font-semibold text-gray-700">
-                    상태
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {[0, 1, 2, 3, 4, 5].map((index) => {
-                  const position = jointStates.position[index] || 0
-                  const velocity = jointStates.velocity[index] || 0
-                  const effort = jointStates.effort[index] || 0
-                  const isMoving = Math.abs(velocity) > 0.01
-
-                  return (
-                    <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="py-3 px-4 font-medium text-gray-900">
-                        Joint {index + 1}
-                      </td>
-                      <td className="py-3 px-4 text-right font-mono text-gray-900">
-                        {formatPosition(position)}°
-                      </td>
-                      <td className="py-3 px-4 text-right font-mono text-gray-900">
-                        {formatPosition(velocity)}
-                      </td>
-                      <td className="py-3 px-4 text-right font-mono text-gray-900">
-                        {formatPosition(effort)}
-                      </td>
-                      <td className="py-3 px-4 text-center">
-                        {isMoving ? (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            움직임
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            정지
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </Card>
-
       {/* Joint States Summary - Text Only */}
       <Card variant="elevated">
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">관절 요약 (위치 & 속도)</h3>
+          <h2 className="text-xl font-bold text-gray-900">관절 상태</h2>
+          <p className="text-sm text-gray-600">6축 로봇 관절의 위치, 속도, 토크 정보</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[0, 1, 2, 3, 4, 5].map((index) => {
               const position = jointStates.position[index] || 0
