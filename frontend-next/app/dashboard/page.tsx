@@ -50,9 +50,11 @@ export default function Dashboard() {
         tomorrow.setDate(tomorrow.getDate() + 1)
 
         const todayTasks = completedTasks.filter((task: any) => {
-          if (!task.completed_at) return false
+          // completed_at이 있으면 사용, 없으면 created_at 사용
+          const dateToCheck = task.completed_at || task.created_at
+          if (!dateToCheck) return false
 
-          const taskDate = new Date(task.completed_at)
+          const taskDate = new Date(dateToCheck)
           // 오늘 00:00:00 ~ 내일 00:00:00 사이
           return taskDate >= today && taskDate < tomorrow
         })
