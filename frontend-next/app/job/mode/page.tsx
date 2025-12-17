@@ -52,6 +52,10 @@ export default function ModeSelection() {
   }
 
   const handleModeClick = (mode: Mode) => {
+    // 프레스 모드는 비활성화
+    if (mode.id === 'press' || mode.id === 'pressing' || mode.name === '프레스') {
+      return
+    }
     setSelectedMode(mode)
   }
 
@@ -98,29 +102,40 @@ export default function ModeSelection() {
         </h2>
 
         <div className="space-y-4">
-          {modes.map((mode) => (
-            <Card
-              key={mode.id}
-              selectable
-              selected={selectedMode?.id === mode.id}
-              onClick={() => handleModeClick(mode)}
-            >
-              <div className="flex items-center space-x-4">
-                <div className="text-5xl">{mode.icon}</div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {mode.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {mode.description}
-                  </p>
-                  <div className="text-sm text-gray-500 mt-2">
-                    예상 시간: 약 {mode.duration}초
+          {modes.map((mode) => {
+            // 프레스 모드 비활성화 체크
+            const isDisabled = mode.id === 'press' || mode.id === 'pressing' || mode.name === '프레스'
+
+            return (
+              <Card
+                key={mode.id}
+                selectable
+                selected={selectedMode?.id === mode.id}
+                onClick={() => handleModeClick(mode)}
+                className={isDisabled ? 'opacity-50 cursor-not-allowed' : ''}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="text-5xl">{mode.icon}</div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {mode.name}
+                      {isDisabled && (
+                        <span className="ml-2 text-xs font-normal text-red-600 bg-red-50 px-2 py-1 rounded">
+                          지원 예정
+                        </span>
+                      )}
+                    </h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      {isDisabled ? '현재 지원하지 않는 모드입니다' : mode.description}
+                    </p>
+                    <div className="text-sm text-gray-500 mt-2">
+                      예상 시간: 약 {mode.duration}초
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            )
+          })}
         </div>
 
         {modes.length === 0 && (
