@@ -79,24 +79,6 @@ export function RobotArm3DViewer({ jointAngles, progress = 0 }: RobotArm3DViewer
         </Suspense>
       </Canvas>
 
-      {/* 진행률 오버레이 */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '16px',
-          right: '16px',
-          background: 'rgba(0, 0, 0, 0.7)',
-          color: 'white',
-          padding: '12px 20px',
-          borderRadius: '8px',
-          fontWeight: 'bold',
-          fontSize: '18px',
-          backdropFilter: 'blur(10px)',
-        }}
-      >
-        {Math.round(progress)}%
-      </div>
-
       {/* 컨트롤 안내 */}
       <div
         style={{
