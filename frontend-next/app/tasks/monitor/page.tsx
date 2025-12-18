@@ -109,10 +109,18 @@ export default function TaskMonitor() {
     if (!task.created_at) return 0
 
     const start = new Date(task.created_at).getTime()
-    // 완료된 작업은 updated_at, 진행 중이면 현재 시간 사용
-    const end = task.updated_at
-      ? new Date(task.updated_at).getTime()
-      : Date.now()
+
+    // 완료된 작업(completed, failed, cancelled)은 updated_at을 종료 시간으로 사용
+    // 진행 중인 작업은 현재 시간을 사용
+    let end: number
+    if (['completed', 'failed', 'cancelled'].includes(task.status)) {
+      // 완료된 작업은 updated_at이 있어야 함, 없으면 created_at 사용 (0초)
+      end = task.updated_at ? new Date(task.updated_at).getTime() : start
+    } else {
+      // 진행 중인 작업은 현재 시간 사용
+      end = Date.now()
+    }
+
     const diffMs = end - start
 
     // 밀리초를 초로 변환
