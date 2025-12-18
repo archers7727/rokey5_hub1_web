@@ -1,11 +1,13 @@
 /**
- * MCA-03: 작업 실행 모니터링 페이지 (3D 제외)
+ * MCA-03: 작업 실행 모니터링 페이지
+ * 3D 로봇팔 시각화 포함
  */
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@components/Button'
 import { Card } from '@components/Card'
 import { ProgressBar } from '@components/ProgressBar'
+import { RobotArm3DViewer } from '@components/RobotArm3DViewer'
 import { useWebSocket } from '@hooks/useWebSocket'
 import { jobsApi } from '@services/api'
 import './JobMonitoring.css'
@@ -175,16 +177,9 @@ export default function JobMonitoring() {
             </div>
           </Card>
 
-          {/* 3D 뷰 플레이스홀더 */}
-          <div className="preview-placeholder">
-            <div className="placeholder-content">
-              <div className="placeholder-icon">🤖</div>
-              <h3>실시간 로봇 뷰</h3>
-              <p>3D 시각화는 향후 업데이트 예정입니다</p>
-              <div className="placeholder-status">
-                진행률: {Math.round(progress)}%
-              </div>
-            </div>
+          {/* 3D 로봇팔 뷰 */}
+          <div className="robot-3d-viewer">
+            <RobotArm3DViewer jointAngles={jointAngles} progress={progress} />
           </div>
         </div>
       </div>

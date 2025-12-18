@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Card } from '@/components/Card'
 import { Button } from '@/components/Button'
+import { RobotArm3DViewer } from '@/components/RobotArm3DViewer'
 import { useTasksRealtime } from '@/hooks/useTasksRealtime'
 import { useRobotStateRealtime } from '@/hooks/useRobotStateRealtime'
 
@@ -108,10 +109,18 @@ export default function TaskMonitor() {
     if (!task.created_at) return 0
 
     const start = new Date(task.created_at).getTime()
-    // 완료된 작업은 updated_at, 진행 중이면 현재 시간 사용
-    const end = task.updated_at
-      ? new Date(task.updated_at).getTime()
-      : Date.now()
+
+    // 완료된 작업(completed, failed, cancelled)은 updated_at을 종료 시간으로 사용
+    // 진행 중인 작업은 현재 시간을 사용
+    let end: number
+    if (['completed', 'failed', 'cancelled'].includes(task.status)) {
+      // 완료된 작업은 updated_at이 있어야 함, 없으면 created_at 사용 (0초)
+      end = task.updated_at ? new Date(task.updated_at).getTime() : start
+    } else {
+      // 진행 중인 작업은 현재 시간 사용
+      end = Date.now()
+    }
+
     const diffMs = end - start
 
     // 밀리초를 초로 변환
@@ -201,6 +210,43 @@ export default function TaskMonitor() {
     )
   }
 
+  // 현재 실행 중인 작업의 관절 각도
+  const runningTask = activeTasks.find((t: Task) => t.status === 'running')
+  const currentProgress = runningTask?.progress || 0
+
+  // 로봇팔 애니메이션을 위한 상태
+  const [animatedJointAngles, setAnimatedJointAngles] = useState<number[]>([0, 0, 0, 0, 0, 0])
+
+  // 진행 중인 작업이 있으면 로봇팔 애니메이션
+  useEffect(() => {
+    if (!runningTask) {
+      // 작업이 없으면 홈 포지션
+      setAnimatedJointAngles([0, 0, 0, 0, 0, 0])
+      return
+    }
+
+    // 작업 진행 중이면 관절을 부드럽게 움직임
+    const interval = setInterval(() => {
+      const time = Date.now() / 1000
+      // 진행률이 0이어도 최소한의 움직임 보장 (0.3 ~ 1.0)
+      const progress = Math.max(0.3, currentProgress / 100)
+
+      // 작업 진행도에 따라 관절 각도 변경
+      setAnimatedJointAngles([
+        Math.sin(time * 0.5) * 30 * progress,           // Joint 1: 좌우 회전
+        -20 + Math.sin(time * 0.3) * 15 * progress,     // Joint 2: 위아래
+        90 + Math.cos(time * 0.4) * 20 * progress,      // Joint 3: 엘보우
+        Math.sin(time * 0.6) * 25 * progress,           // Joint 4: 손목 회전
+        45 + Math.cos(time * 0.5) * 15 * progress,      // Joint 5: 손목 벤드
+        Math.sin(time * 0.7) * 30 * progress,           // Joint 6: 플랜지 회전
+      ])
+    }, 50) // 50ms마다 업데이트
+
+    return () => clearInterval(interval)
+  }, [runningTask, currentProgress])
+
+  const jointAngles = robotState?.joint_angles || animatedJointAngles
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -216,68 +262,79 @@ export default function TaskMonitor() {
         </Link>
       </div>
 
-      {/* Robot Status */}
-      {robotState && (
-        <Link href="/robot/status" className="block">
-          <Card variant="outlined" className="bg-gray-50 cursor-pointer hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className={`w-4 h-4 rounded-full ${getStatusColor(robotState.status)}`} />
-                <div>
-                  <div className="font-semibold text-gray-900">
-                    로봇 상태: {getStatusText(robotState.status)}
+      {/* 좌우 분할 레이아웃 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* 좌측: 작업 목록 */}
+        <div className="space-y-6">
+          {/* Robot Status */}
+          {robotState && (
+            <Link href="/robot/status" className="block">
+              <Card variant="outlined" className="bg-gray-50 cursor-pointer hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-4 h-4 rounded-full ${getStatusColor(robotState.status)}`} />
+                    <div>
+                      <div className="font-semibold text-gray-900">
+                        로봇 상태: {getStatusText(robotState.status)}
+                      </div>
+                      <div className="text-sm text-gray-600">Doosan M0609 (클릭하여 상세 보기)</div>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600">Doosan M0609 (클릭하여 상세 보기)</div>
+                  {robotState.current_task_id && (
+                    <div className="text-sm text-gray-600">
+                      작업 ID: {robotState.current_task_id.substring(0, 8)}...
+                    </div>
+                  )}
                 </div>
-              </div>
-              {robotState.current_task_id && (
-                <div className="text-sm text-gray-600">
-                  작업 ID: {robotState.current_task_id.substring(0, 8)}...
-                </div>
-              )}
-            </div>
-          </Card>
-        </Link>
-      )}
+              </Card>
+            </Link>
+          )}
 
-      {/* Active Tasks */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">
-            진행 중인 작업 ({activeTasks.length})
-          </h2>
-          <Link href="/job/material">
-            <Button variant="primary">+ 새 작업 추가</Button>
-          </Link>
-        </div>
-
-        {activeTasks.length > 0 ? (
+          {/* Active Tasks */}
           <div className="space-y-4">
-            {activeTasks.map((task: Task) => renderTaskCard(task))}
-          </div>
-        ) : (
-          <Card variant="outlined">
-            <div className="text-center py-12">
-              <p className="text-gray-500 mb-4">진행 중인 작업이 없습니다</p>
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900">
+                진행 중인 작업 ({activeTasks.length})
+              </h2>
               <Link href="/job/material">
-                <Button variant="secondary">새 작업 시작하기</Button>
+                <Button variant="primary">+ 새 작업 추가</Button>
               </Link>
             </div>
-          </Card>
-        )}
-      </div>
 
-      {/* Completed Tasks */}
-      {completedTasks.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-gray-900">
-            완료된 작업 ({completedTasks.length})
-          </h2>
-          <div className="space-y-4">
-            {completedTasks.slice(0, 5).map((task: Task) => renderTaskCard(task))}
+            {activeTasks.length > 0 ? (
+              <div className="space-y-4">
+                {activeTasks.map((task: Task) => renderTaskCard(task))}
+              </div>
+            ) : (
+              <Card variant="outlined">
+                <div className="text-center py-12">
+                  <p className="text-gray-500 mb-4">진행 중인 작업이 없습니다</p>
+                  <Link href="/job/material">
+                    <Button variant="secondary">새 작업 시작하기</Button>
+                  </Link>
+                </div>
+              </Card>
+            )}
           </div>
+
+          {/* Completed Tasks */}
+          {completedTasks.length > 0 && (
+            <div className="space-y-4">
+              <h2 className="text-2xl font-bold text-gray-900">
+                완료된 작업 ({completedTasks.length})
+              </h2>
+              <div className="space-y-4">
+                {completedTasks.slice(0, 5).map((task: Task) => renderTaskCard(task))}
+              </div>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* 우측: 3D 로봇팔 뷰 */}
+        <div className="lg:sticky lg:top-6 h-[600px] rounded-lg overflow-hidden shadow-2xl">
+          <RobotArm3DViewer jointAngles={jointAngles} progress={currentProgress} />
+        </div>
+      </div>
     </div>
   )
 }

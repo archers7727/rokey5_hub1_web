@@ -107,44 +107,14 @@
   font-family: var(--font-mono);
 }
 
-.preview-placeholder {
-  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+/* 3D 로봇팔 뷰어 */
+.robot-3d-viewer {
   border-radius: var(--radius-lg);
-  border: 2px dashed var(--primary-blue-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
   min-height: 500px;
-}
-
-.placeholder-content {
-  text-align: center;
-  padding: var(--space-8);
-}
-
-.placeholder-icon {
-  font-size: 100px;
-  margin-bottom: var(--space-4);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.8;
-  }
-}
-
-.placeholder-status {
-  margin-top: var(--space-4);
-  font-size: var(--text-2xl);
-  font-weight: var(--font-bold);
-  color: var(--primary-blue);
+  height: 600px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
 /* 반응형 */
