@@ -229,7 +229,7 @@ export default function RobotStatus() {
       </div>
 
       {/* Robot Status Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Status */}
         <Card variant="elevated">
           <div className="space-y-2">
@@ -258,22 +258,6 @@ export default function RobotStatus() {
                 </span>
               ) : (
                 <span className="text-gray-400">없음</span>
-              )}
-            </div>
-          </div>
-        </Card>
-
-        {/* Error State */}
-        <Card variant="elevated">
-          <div className="space-y-2">
-            <div className="text-sm font-semibold text-gray-500 uppercase">
-              에러 상태
-            </div>
-            <div className="text-lg font-semibold">
-              {robotState.error_state ? (
-                <span className="text-red-600">{robotState.error_state}</span>
-              ) : (
-                <span className="text-green-600">정상</span>
               )}
             </div>
           </div>
